@@ -50,7 +50,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Оцените что-то з</h1>
+        <h1></h1>
         <div class="stars">
             <span class="star" data-value="1">&#9733;</span>
             <span class="star" data-value="2">&#9733;</span>
@@ -58,14 +58,14 @@
             <span class="star" data-value="4">&#9733;</span>
             <span class="star" data-value="5">&#9733;</span>
         </div>
-        <div id="ratingValue">Ваша оценка: 0 звёзд</div>
+        <div id="ratingValue">0 աստղ</div>
         <button onclick="saveRating()">Сохранить оценку</button>
 
-        <h2>Сохранённые оценки</h2>
+        <h2>պահպանված աշխարհ</h2>
         <table id="ratingsTable">
             <thead>
                 <tr>
-                    <th>Оценка</th>
+                    <th>գնահատումներ</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,7 +94,7 @@
             star.addEventListener('click', () => {
                 selectedRating = star.getAttribute('data-value');
                 updateStars(selectedRating);
-                document.getElementById('ratingValue').textContent = `Ваша оценка: ${selectedRating} звёзд`;
+                document.getElementById('ratingValue').textContent = `ձեր գնահատումը: ${selectedRating} ;
             });
         });
 
