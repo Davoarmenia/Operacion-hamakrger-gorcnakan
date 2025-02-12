@@ -1,132 +1,70 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="hy">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Գնահատման համակարգ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #f4f4f9;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+        h1 {
             text-align: center;
         }
-        .stars {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .star {
-            font-size: 30px;
-            cursor: pointer;
-            color: #ccc;
-            margin: 0 5px;
-            transition: color 0.2s;
-        }
-        .star.active, .star:hover {
-            color: #ffcc00;
-        }
-        #ratingValue {
-            font-size: 20px;
-            margin-top: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .result {
             margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
+        .result span {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1></h1>
-        <div class="stars">
-            <span class="star" data-value="1">&#9733;</span>
-            <span class="star" data-value="2">&#9733;</span>
-            <span class="star" data-value="3">&#9733;</span>
-            <span class="star" data-value="4">&#9733;</span>
-            <span class="star" data-value="5">&#9733;</span>
-        </div>
-        <div id="ratingValue">0 աստղ</div>
-        <button onclick="saveRating()">պահպանել</button>
 
-        <h2>ձեր աստղերը</h2>
-        <table id="ratingsTable">
-            <thead>
-                <tr>
-                    <th>գնահատումներ</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <h1>Գնահատման համակարգ</h1>
+
+    <div class="form-container">
+        <label for="grade">Մուտքագրեք Ձեր գնահատականը (0-100):</label>
+        <input type="number" id="grade" min="0" max="100" placeholder="Գնահատականը">
+        <button onclick="checkGrade()">Հաստատել</button>
+
+        <div class="result" id="result"></div>
     </div>
 
     <script>
-        // Загрузка сохранённых оценок
-        function loadRatings() {
-            const ratings = JSON.parse(localStorage.getItem('ratings')) || [];
-            const tbody = document.querySelector('#ratingsTable tbody');
-            tbody.innerHTML = '';
-            ratings.forEach(rating => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${'&#9733;'.repeat(rating)}</td>`;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Обработка кликов по звёздам
-        const stars = document.querySelectorAll('.star');
-        let selectedRating = 0;
-
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                selectedRating = star.getAttribute('data-value');
-                updateStars(selectedRating);
-                document.getElementById('ratingValue').textContent = `ձեր գնահատումը: ${selectedRating} ;
-            });
-        });
-
-        // Обновление отображения звёзд
-        function updateStars(rating) {
-            stars.forEach(star => {
-                if (star.getAttribute('data-value') <= rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
-            });
-        }
-
-        // Сохранение оценки
-        function saveRating() {
-            if (selectedRating === 0) {
-                alert('Пожалуйста, выберите оценку!');
-                return;
+        function checkGrade() {
+            var grade = document.getElementById('grade').value;
+            var resultText = "";
+            
+            if (grade === "") {
+                resultText = "Խնդրում ենք մուտքագրել գնահատական:";
+            } else if (grade < 0 || grade > 100) {
+                resultText = "Նախընտրելի գնահատականը պետք է լինի 0-ից 100 միջև:";
+            } else if (grade >= 90) {
+                resultText = "Հիանալի: Ձեր գնահատականը՝ " + grade;
+            } else if (grade >= 75) {
+                resultText = "Լավ: Ձեր գնահատականը՝ " + grade;
+            } else if (grade >= 50) {
+                resultText = "Տոհմիկ: Ձեր գնահատականը՝ " + grade;
+            } else {
+                resultText = "Տխուր. Դուք չհաջողեցաք: Ձեր գնահատականը՝ " + grade;
             }
 
-            const ratings = JSON.parse(localStorage.getItem('ratings')) || [];
-            ratings.push(selectedRating);
-            localStorage.setItem('ratings', JSON.stringify(ratings));
-            loadRatings();
-            selectedRating = 0;
-            updateStars(0);
-            document.getElementById('ratingValue').textContent = 'Ваша оценка: 0 звёзд';
+            document.getElementById('result').innerHTML = resultText;
         }
-
-        // Загрузка оценок при загрузке страницы
-        window.onload = loadRatings;
     </script>
+
 </body>
 </html>
