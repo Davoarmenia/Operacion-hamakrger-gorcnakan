@@ -29,9 +29,6 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s ease-in-out;
         }
-        .form-container:hover {
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-        }
         .form-container input {
             width: 100%;
             padding: 15px;
@@ -43,10 +40,6 @@
             font-size: 16px;
             outline: none;
             transition: all 0.3s ease;
-        }
-        .form-container input:focus {
-            border-color: #2575fc;
-            box-shadow: 0 0 10px rgba(37, 117, 252, 0.5);
         }
         .form-container button {
             background-color: #2575fc;
@@ -66,9 +59,6 @@
             font-size: 18px;
             margin-top: 20px;
         }
-        .result span {
-            font-weight: bold;
-        }
         #savedGrades {
             margin-top: 40px;
             text-align: center;
@@ -84,9 +74,6 @@
             border-radius: 10px;
             transition: background 0.3s ease;
         }
-        #gradesList li:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
         #deleteButton {
             background-color: #f44336;
             color: white;
@@ -97,7 +84,6 @@
             cursor: pointer;
             transition: background 0.3s ease;
             margin-top: 20px;
-            display: none;
         }
         #deleteButton:hover {
             background-color: #d32f2f;
@@ -111,7 +97,7 @@
     <div class="form-container">
         <label for="grade">Մուտքագրեք Ձեր գնահատականը (0-100):</label>
         <input type="number" id="grade" min="0" max="100" placeholder="Գնահատականը">
-        <button onclick="checkGrade()">Հաստատել</button>
+        <button onclick="submitGrade()">Հաստատել</button>
 
         <div class="result" id="result"></div>
     </div>
@@ -121,22 +107,14 @@
         <ul id="gradesList"></ul>
     </div>
 
-    <!-- Delete Button (Initially Hidden) -->
     <button id="deleteButton" onclick="promptPassword()">Ջնջել բոլոր գնահատականները</button>
 
     <script>
-        // Load saved grades from local storage when the page loads
-        window.onload = function() {
-            loadGrades();
-            checkDeleteButtonVisibility();
-        };
+        // Function to submit grade
+        function submitGrade() {
+            const grade = document.getElementById('grade').value;
+            let resultText = "";
 
-        // Function to handle grade input and validation
-        function checkGrade() {
-            var grade = document.getElementById('grade').value;
-            var resultText = "";
-
-            // Check if grade is valid
             if (grade === "") {
                 resultText = "Խնդրում ենք մուտքագրել գնահատական:";
             } else if (grade < 0 || grade > 100) {
@@ -151,58 +129,55 @@
                 resultText = "Տխուր. Դուք չհաջողեցաք: Ձեր գնահատականը՝ " + grade;
             }
 
-            // Save the grade to local storage
-            saveGrade(grade, resultText);
-
-            // Show the result on the page
+            // Show the result
             document.getElementById('result').innerHTML = resultText;
+
+            // Save the grade to localStorage
+            saveGrade(grade, resultText);
         }
 
-        // Save the grade in Local Storage
+        // Save grade to localStorage
         function saveGrade(grade, resultText) {
-            var grades = JSON.parse(localStorage.getItem("grades")) || [];
-            var gradeData = {
-                grade: grade,
-                result: resultText
-            };
+            let grades = JSON.parse(localStorage.getItem("grades")) || [];
+            grades.push({ grade, resultText });
 
-            grades.push(gradeData);
             localStorage.setItem("grades", JSON.stringify(grades));
 
             loadGrades();
         }
 
-        // Load grades from Local Storage and display them
+        // Load grades from localStorage and display them
         function loadGrades() {
-            var grades = JSON.parse(localStorage.getItem("grades")) || [];
-            var gradesList = document.getElementById("gradesList");
+            const grades = JSON.parse(localStorage.getItem("grades")) || [];
+            const gradesList = document.getElementById('gradesList');
+            gradesList.innerHTML = '';
 
-            gradesList.innerHTML = ""; // Clear the list first
-
-            grades.forEach(function(item) {
-                var li = document.createElement("li");
-                li.textContent = `Գնահատական: ${item.grade} - ${item.result}`;
+            grades.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `Գնահատական: ${item.grade} - ${item.resultText}`;
                 gradesList.appendChild(li);
             });
+
+            checkDeleteButtonVisibility();
         }
 
-        // Check if the delete button should be visible (only show it if grades exist)
+        // Check if the delete button should be shown
         function checkDeleteButtonVisibility() {
-            var grades = JSON.parse(localStorage.getItem("grades")) || [];
-            var deleteButton = document.getElementById("deleteButton");
+            const grades = JSON.parse(localStorage.getItem("grades")) || [];
+            const deleteButton = document.getElementById('deleteButton');
 
             if (grades.length > 0) {
-                deleteButton.style.display = "inline-block";
+                deleteButton.style.display = 'inline-block';
             } else {
-                deleteButton.style.display = "none";
+                deleteButton.style.display = 'none';
             }
         }
 
-        // Prompt user for password to delete all results
+        // Prompt for password to delete all grades
         function promptPassword() {
-            var password = prompt("Խնդրում ենք մուտքագրել գաղտնաբառը՝");
+            const password = prompt("Խնդրում ենք մուտքագրել գաղտնաբառը՝");
 
-            if (password === "1999") {  // Predefined password to delete the data (change this to your desired password)
+            if (password === "12345") {
                 if (confirm("Համոզվա՞ծ եք, որ ցանկանում եք ջնջել բոլոր գնահատականները?")) {
                     deleteAllGrades();
                 }
@@ -211,13 +186,17 @@
             }
         }
 
-        // Delete all grades from local storage
+        // Delete all grades from localStorage
         function deleteAllGrades() {
             localStorage.removeItem("grades");
-            loadGrades();  // Refresh the grades list
-            checkDeleteButtonVisibility();  // Recheck if delete button should be visible
+            loadGrades();
             alert("Բոլոր գնահատականները ջնջվել են:");
         }
+
+        // Load grades when the page loads
+        window.onload = function() {
+            loadGrades();
+        };
     </script>
 
 </body>
