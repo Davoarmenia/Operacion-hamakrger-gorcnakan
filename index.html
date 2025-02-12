@@ -34,6 +34,17 @@
             padding-top: 10px;
             border-top: 1px solid #ccc;
         }
+        #deleteButton {
+            margin-top: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        #deleteButton:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -53,12 +64,17 @@
         <ul id="gradesList"></ul>
     </div>
 
+    <!-- Delete Button (Initially Hidden) -->
+    <button id="deleteButton" style="display: none;" onclick="promptPassword()">Ջնջել բոլոր գնահատականները</button>
+
     <script>
         // Load saved grades from local storage when the page loads
         window.onload = function() {
             loadGrades();
+            checkDeleteButtonVisibility();
         };
 
+        // Function to handle grade input and validation
         function checkGrade() {
             var grade = document.getElementById('grade').value;
             var resultText = "";
@@ -111,6 +127,39 @@
                 li.textContent = `Գնահատական: ${item.grade} - ${item.result}`;
                 gradesList.appendChild(li);
             });
+        }
+
+        // Check if the delete button should be visible (only show it if grades exist)
+        function checkDeleteButtonVisibility() {
+            var grades = JSON.parse(localStorage.getItem("grades")) || [];
+            var deleteButton = document.getElementById("deleteButton");
+
+            if (grades.length > 0) {
+                deleteButton.style.display = "inline-block";
+            } else {
+                deleteButton.style.display = "none";
+            }
+        }
+
+        // Prompt user for password to delete all results
+        function promptPassword() {
+            var password = prompt("Խնդրում ենք մուտքագրել գաղտնաբառը՝");
+
+            if (password === "1999") {  // Predefined password to delete the data (change this to your desired password)
+                if (confirm("Համոզվա՞ծ եք, որ ցանկանում եք ջնջել բոլոր գնահատականները?")) {
+                    deleteAllGrades();
+                }
+            } else {
+                alert("Անվավեր գաղտնաբառ!");
+            }
+        }
+
+        // Delete all grades from local storage
+        function deleteAllGrades() {
+            localStorage.removeItem("grades");
+            loadGrades();  // Refresh the grades list
+            checkDeleteButtonVisibility();  // Recheck if delete button should be visible
+            alert("Բոլոր գնահատականները ջնջվել են:");
         }
     </script>
 
